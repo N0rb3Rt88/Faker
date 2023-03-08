@@ -19,4 +19,31 @@ class Payment extends \Faker\Provider\Payment
     {
         return static::iban($countryCode, $prefix, $length);
     }
+
+    /**
+     * Value Added Tax (VAT)
+     *
+     * @example '87654321-3-41', ('eu') 'HU87654321'
+     *
+     * @see http://ec.europa.eu/taxation_customs/vies/faq.html?locale=en#item_11
+     * @see http://www.iecomputersystems.com/ordering/eu_vat_numbers.htm
+     * @see http://en.wikipedia.org/wiki/VAT_identification_number
+     *
+     * @param bool $euFormat
+     * @param string $prefix
+     *
+     * @return string VAT Number
+     */
+    public static function vat(bool $euFormat = false, string $prefix = 'HU'): string
+    {
+        if ($euFormat) {
+            return sprintf('%s%d', $prefix, self::randomNumber(8, true));
+        }
+
+        $generalSalesTaxType = self::numberBetween(1, 5);
+
+        $territorialTaxAuthorityCode = sprintf("%02d", self::randomElement(array_merge(range(2, 20), range(22, 44), [51])));
+
+        return sprintf('%d-%d-%d', self::randomNumber(8, true), $generalSalesTaxType, $territorialTaxAuthorityCode);
+    }
 }
